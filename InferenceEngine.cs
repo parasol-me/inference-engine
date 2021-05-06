@@ -5,7 +5,7 @@ namespace assignment2
 {
     public class InferenceEngine
     {
-        public QueryResult RunQuery(KnowledgeBase knowledgeBase, string querySymbol, AlgorithmType method)
+        public QueryResult RunQueryForHornForm(HornFormKnowledgeBase knowledgeBase, string querySymbol, AlgorithmType method)
         {
             switch (method)
             {
