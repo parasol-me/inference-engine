@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using assignment2.enums;
 
@@ -26,28 +27,73 @@ namespace assignment2
 
             var knowledgeBase = ReadKnowledgeBaseFromFile(fileName);
             var query = ReadQueryFromFile(fileName);
-            
             var inferenceEngine = new InferenceEngine();
-            
             var watch = new Stopwatch();
             
             watch.Start();
 
-            var queryResult = inferenceEngine.RunQuery(knowledgeBase, query, algorithmType);
+            var queryResult = inferenceEngine.RunQueryForHornForm(knowledgeBase, query, algorithmType);
             
             watch.Stop();
             
             Console.WriteLine($"{(queryResult.Result ? "YES" : "NO")}: {string.Join(", ", queryResult.Entailed)}");
         }
 
-        private static KnowledgeBase ReadKnowledgeBaseFromFile(string fileName)
+        private static HornFormKnowledgeBase ReadKnowledgeBaseFromFile(string fileName)
         {
-            throw new NotImplementedException();
+            var file = new System.IO.StreamReader($@"{fileName}");
+
+            // find tell line
+            string line = file.ReadLine();
+            while (line != null && line.ToLower() != "tell")
+            {
+                line = file.ReadLine();
+            }
+            if (line == null || line.ToLower() != "tell") throw new Exception("file is not valid");
+            
+            // KB follows tell line
+            line = file.ReadLine();
+            var clauses = new List<HornClause>();
+            if (line == null) throw new Exception("file is not valid");
+            var clauseRegex = new Regex(@"([^;]+)");
+            var clauseMatches = clauseRegex.Matches(line);
+            foreach (Match clause in clauseMatches)
+            {
+                // for each matched clause, get the conjunct symbols and the implication symbols or final implication
+                var splitClause = clause.Value.Split("=>");
+                var symbols = splitClause[0];
+                var implicationString = splitClause.Length == 2 ? splitClause[1] : null;
+                var finalImplication =
+                    implicationString == null || implicationString.ToLower() == "true"
+                        ? true
+                        : implicationString.ToLower() == "false"
+                            ? false
+                            : (bool?) null;
+                var implicationSymbol = finalImplication == null ? implicationString : null;
+                var conjunctSymbolsRegex = new Regex(@"([^&]+)");
+                var conjunctSymbolsMatches = conjunctSymbolsRegex.Matches(symbols);
+                clauses.Add(new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
+            }
+
+            return new HornFormKnowledgeBase(clauses);
         }
         
         private static string ReadQueryFromFile(string fileName)
         {
-            throw new NotImplementedException();
+            var file = new System.IO.StreamReader($@"{fileName}");
+
+            // find ask line
+            string line = file.ReadLine();
+            while (line != null && line.ToLower() != "ask")
+            {
+                line = file.ReadLine();
+            }
+            if (line == null || line.ToLower() != "ask") throw new Exception("file is not valid");
+            
+            // query follows ask line
+            line = file.ReadLine();
+            if (line == null) throw new Exception("file is not valid");
+            return line.Trim();
         }
     }
 }
