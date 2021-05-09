@@ -6,17 +6,22 @@ namespace assignment2
 {
     public class HornClause
     {
-        public HornClause(string? implicationSymbol, bool? finalImplication, HashSet<string> conjunctedSymbols)
+        public HornClause(string? implicationSymbol, bool? finalImplication, HashSet<string> conjunctSymbols)
         {
             ImplicationSymbol = implicationSymbol;
             FinalImplication = finalImplication;
-            ConjunctSymbols = conjunctedSymbols;
+            ConjunctSymbols = conjunctSymbols;
         }
 
         public bool? FinalImplication { get; }
         
         public string? ImplicationSymbol { get; }
 
-        public HashSet<string> ConjunctSymbols;
+        public HashSet<string> ConjunctSymbols { get; }
+
+        public bool IsSymbolFact(string symbol)
+        {
+            return ConjunctSymbols.Contains(symbol) && FinalImplication == true;
+        }
     }
 }
