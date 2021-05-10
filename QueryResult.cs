@@ -7,12 +7,18 @@ namespace assignment2
     {
         public bool Result { get; }
         
-        public List<string> Entailed { get; }
+        public HashSet<string> Entailed { get; }
         
-        public QueryResult(bool result, List<string> entailed)
+        public HashSet<string> ProvedFalse { get; }
+        
+        public HashSet<string> Queried { get; }
+        
+        public QueryResult(bool result, HashSet<string> entailed, HashSet<string> queried, HashSet<string> provedFalse)
         {
             Result = result;
             Entailed = entailed;
+            Queried = queried;
+            ProvedFalse = provedFalse;
         }
     }
 }

@@ -37,6 +37,7 @@ namespace assignment2
             watch.Stop();
             
             Console.WriteLine($"{(queryResult.Result ? "YES" : "NO")}: {string.Join(", ", queryResult.Entailed)}");
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
         private static HornFormKnowledgeBase ReadKnowledgeBaseFromFile(string fileName)
@@ -69,7 +70,7 @@ namespace assignment2
                         : implicationString.ToLower() == "false"
                             ? false
                             : (bool?) null;
-                var implicationSymbol = finalImplication == null ? implicationString : null;
+                var implicationSymbol = finalImplication == null ? implicationString.Trim() : null;
                 var conjunctSymbolsRegex = new Regex(@"([^&]+)");
                 var conjunctSymbolsMatches = conjunctSymbolsRegex.Matches(symbols);
                 clauses.Add(new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
