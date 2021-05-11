@@ -18,12 +18,14 @@ namespace assignment2
                                     $"\niengine <method> <filename>");
             }
             var fileName = args[1];
-            var isMethodValid = Enum.TryParse<AlgorithmType>(args[0], true, out var algorithmType);
-            if (!isMethodValid)
-            {
-                throw new Exception($"The input algorithm type ({algorithmType}) is not valid." +
-                                    $"\nValid inputs are {AlgorithmType.Tt}, {AlgorithmType.Fc}, {AlgorithmType.Bc}.");
-            }
+            // var isMethodValid = Enum.TryParse<AlgorithmType>(args[0], true, out var algorithmType);
+            // if (!isMethodValid)
+            // {
+            //     throw new Exception($"The input algorithm type ({algorithmType}) is not valid." +
+            //                         $"\nValid inputs are {AlgorithmType.Tt}, {AlgorithmType.Fc}, {AlgorithmType.Bc}.");
+            // }
+
+            var algorithmType = AlgorithmType.Bc;
 
             var knowledgeBase = ReadKnowledgeBaseFromFile(fileName);
             var query = ReadQueryFromFile(fileName);
@@ -49,6 +51,7 @@ namespace assignment2
             while (line != null && line.ToLower() != "tell")
             {
                 line = file.ReadLine();
+                //todo ?
             }
             if (line == null || line.ToLower() != "tell") throw new Exception("file is not valid");
             
@@ -64,6 +67,7 @@ namespace assignment2
                 var splitClause = clause.Value.Split("=>");
                 var symbols = splitClause[0];
                 var implicationString = splitClause.Length == 2 ? splitClause[1] : null;
+                //todo multiple conjunctions?
                 var finalImplication =
                     implicationString == null || implicationString.ToLower() == "true"
                         ? true
