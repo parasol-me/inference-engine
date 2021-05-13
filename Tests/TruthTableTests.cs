@@ -7,16 +7,22 @@ namespace assignment2.Tests
     {
         private TruthTable tt = new TruthTable();
         private HornFormKnowledgeBase kb;
+        
+        [SetUp]
+        public void init()
+        {
+            HornClause hc1 = new HornClause(null, true, new HashSet<string> {"a"});
+            HornClause hc2 = new HornClause(null, true, new HashSet<string> {"b"});
+            HornClause hc3 = new HornClause(null, true, new HashSet<string> {"c"});
+            List<HornClause> listHC = new List<HornClause>(){hc1, hc2, hc3};
+            kb = new HornFormKnowledgeBase(listHC);
+        }
 
-        // [SetUp]
-        // public void init()
-        // {
-        //     HornClause hc1 = new HornClause(null, true, new HashSet<string> {"a"});
-        //     HornClause hc2 = new HornClause(null, true, new HashSet<string> {"b"});
-        //     HornClause hc3 = new HornClause(null, true, new HashSet<string> {"c"});
-        //     List<HornClause> listHC = new List<HornClause>(){hc1, hc2, hc3};
-        //     kb = new HornFormKnowledgeBase(listHC);
-        // }
+        [Test]
+        public void testTT()
+        {
+            tt.DoesEntail(kb, "d");
+        }
         //
         //
         // [Test]

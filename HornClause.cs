@@ -5,12 +5,12 @@ namespace assignment2
 {
     public class HornClause
     {
+        private bool isTrue;
         public HornClause(string? implicationSymbol, bool? finalImplication, HashSet<string> conjunctSymbols)
         {
             ImplicationSymbol = implicationSymbol;
             FinalImplication = finalImplication;
             ConjunctSymbols = conjunctSymbols;
-            bool isTrue;
         }
 
         public bool? FinalImplication { get; }
