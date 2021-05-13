@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using System;
 using System.Collections.Generic;
 
 namespace assignment2
@@ -11,6 +10,7 @@ namespace assignment2
             ImplicationSymbol = implicationSymbol;
             FinalImplication = finalImplication;
             ConjunctSymbols = conjunctSymbols;
+            bool isTrue;
         }
 
         public bool? FinalImplication { get; }
@@ -18,6 +18,8 @@ namespace assignment2
         public string? ImplicationSymbol { get; }
 
         public HashSet<string> ConjunctSymbols { get; }
+
+        public void SetTrue(bool isTrue) { this.isTrue = isTrue; }
 
         public bool IsSymbolFact(string symbol)
         {
