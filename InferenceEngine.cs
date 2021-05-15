@@ -27,73 +27,70 @@ namespace assignment2
         {
             var agenda = new List<HornClause>();     //symbols which are not completely implied (awaiting conjunct symbol)
             var inferred = new HashSet<string>();   //symbols proven true
+            var queried = new HashSet<string>();    //don't get check again
             var queue = knowledgeBase.Clauses.Where(clause => clause.FinalImplication == true).ToList(); //initialised with Facts
             //couldnt get the LINQ wizardry working here, basic foreach.. 
             foreach (var clause in queue)
             {
-                inferred.Add(clause.ConjunctSymbols.First()); //always first, as assessing fact (singular symbol)
+                inferred.Add(clause.ConjunctSymbols.First()); //always first, as assessing fact (singular conjunct symbol)
             }
+
+            knowledgeBase.Clauses.RemoveAll(clause => clause.FinalImplication == true); //stops assessing fact against itself
+            
             while (queue.Count > 0)
             {
                 var clauseUnderAssessment = queue.First();
+                queried.Add(clauseUnderAssessment.ConjunctSymbols.First());
                 queue.Remove(clauseUnderAssessment);
                 //add to another list (checked) instead?
-                if (clauseUnderAssessment.IsSymbolFact(querySymbol))
-                {
-                    return new QueryResult(true, null, null, null);
-                    //todo 
-                }
 
                 foreach (var kbClause in knowledgeBase.Clauses)
                 {
                     if (kbClause.ConjunctSymbols.Contains(clauseUnderAssessment.ConjunctSymbols.First())) //always first, as assessing fact (singular symbol)
                     {
-                        if (kbClause.ConjunctSymbols.Count.Equals(1))
+                        if (kbClause.ConjunctSymbols.Count.Equals(1) && kbClause.ImplicationSymbol != null)
                         {
-                            //todo add early break when implication symbol is query
                             //clauseUnderAssessment solely implies another symbol (no conjunction)
                             inferred.Add(kbClause.ImplicationSymbol);
+                            //if inferred symbol is query, break early, else add to queue
+                            if (kbClause.IsSymbolFact(querySymbol))
+                                return new QueryResult(true, null, null, null); //todo
                             queue.Add(new HornClause(null, true, new HashSet<string>(){kbClause.ImplicationSymbol}));
                         }
                         else
                         {
                             //if all conjunct symbols are proven, we can prove the Implication
-                            bool allSymbolsTrue = true;
-                            foreach (var symbol in kbClause.ConjunctSymbols)
-                            {
-                                if (!inferred.Contains(symbol))
-                                {
-                                    allSymbolsTrue = false;
-                                    break;
-                                }
-                            }
-                            //if any one isn't, add to agenda
-                            if (allSymbolsTrue)
+                            if (isClauseImplied(kbClause, inferred))
                                 queue.Add(new HornClause(null, true, new HashSet<string>() {kbClause.ImplicationSymbol}));
+                            //if any one isn't, add to agenda
                             else 
                                 agenda.Add(kbClause);
                         }
                     }
                 }
-
-                foreach (var clause in agenda)
+                //Check agenda, if all conjunct symbols of any clause now prove implication, add to queue
+                foreach (var agendaItem in agenda)
                 {
-                    bool allSymbolsTrue = true;
-                    foreach (var symbol in clause.ConjunctSymbols)
-                    {
-                        if (!inferred.Contains(symbol))
-                        {
-                            allSymbolsTrue = false;
-                            break;
-                        }
-
-                    }
-                    if (allSymbolsTrue)
-                        queue.Add(new HornClause(null, true, new HashSet<string>() {clause.ImplicationSymbol}));
+                    if (isClauseImplied(agendaItem, inferred))
+                        queue.Add(new HornClause(null, true, new HashSet<string>() {agendaItem.ImplicationSymbol}));
                 }
             }
             return new QueryResult(false, null, null, null);
             //todo
+        }
+
+        private bool isClauseImplied(HornClause agendaItem, HashSet<string> inferred)
+        {
+            bool allSymbolsTrue = true;
+            foreach (var symbol in agendaItem.ConjunctSymbols)
+            {
+                if (!inferred.Contains(symbol))
+                {
+                    allSymbolsTrue = false;
+                    break;
+                }
+            }
+            return allSymbolsTrue;
         }
 
         private QueryResult BackwardChainingQueryRecursive(HornFormKnowledgeBase knowledgeBase, string querySymbol, 
