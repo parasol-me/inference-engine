@@ -4,12 +4,11 @@ namespace assignment2
 {
     public class HornFormKnowledgeBase
     {
-        public HornFormKnowledgeBase(List<HornClause> clauses)
+        public HornFormKnowledgeBase(Dictionary<string, HornClause> clauses)
         {
             Clauses = clauses;
         }
 
-        public List<HornClause> Clauses { get; }
+        public Dictionary<string, HornClause> Clauses { get; }
     }
-
 }

@@ -25,11 +25,12 @@ namespace assignment2
 
         private QueryResult ForwardChainingQueryRecursive(HornFormKnowledgeBase knowledgeBase, string querySymbol)
         {
+            var allClauses = knowledgeBase.Clauses.Values;
             var agenda = new List<HornClause>();     //symbols which are not completely implied (awaiting conjunct symbol)
-            var queue = new Queue<HornClause>(knowledgeBase.Clauses.Where(clause => clause.FinalImplication == true).ToList()); //initialised with Facts
+            var queue = new Queue<HornClause>(allClauses.Where(clause => clause.FinalImplication == true).ToList()); //initialised with Facts
             var inferred = queue.Select(clause => clause.ConjunctSymbols.First()).ToHashSet(); //symbols proven true
 
-            var clausesToSearch = knowledgeBase.Clauses.Where(clause => clause.FinalImplication != true).ToList(); // non fact clauses
+            var clausesToSearch = allClauses.Where(clause => clause.FinalImplication != true).ToList(); // non fact clauses
             
             while (queue.Count > 0)
             {
@@ -79,14 +80,15 @@ namespace assignment2
         private QueryResult BackwardChainingQueryRecursive(HornFormKnowledgeBase knowledgeBase, string querySymbol, 
             HashSet<string> existingEntailed, HashSet<string> existingQueried, HashSet<string> existingProvedFalse)
         {
+            var allClauses = knowledgeBase.Clauses.Values;
             // keep track of symbols proved true, symbols already queried and symbols proved false from previous recursions
             var entailed = new HashSet<string>(existingEntailed);
             var queried = new HashSet<string>(existingQueried);
             var provedFalse = new HashSet<string>(existingProvedFalse);
             
             // find clauses that directly relates to the query symbol
-            var queryClauses = knowledgeBase.Clauses.Where(clause => clause.ImplicationSymbol == querySymbol ||
-                                                                     clause.IsSymbolFact(querySymbol)
+            var queryClauses = allClauses.Where(clause => clause.ImplicationSymbol == querySymbol ||
+                                                          clause.IsSymbolFact(querySymbol)
             ).ToList();
 
             // no symbol was found that implies the query symbol or proves it as fact

@@ -14,7 +14,7 @@ namespace assignment2.Tests
             var hc1 = new HornClause(null, true, new HashSet<string> {"a"});
             var hc2 = new HornClause(null, true, new HashSet<string> {"b"});
             var hc3 = new HornClause(null, true, new HashSet<string> {"c"});
-            var listHC = new List<HornClause>(){hc1, hc2, hc3};
+            var listHC = new Dictionary<string, HornClause>() { };
             kb = new HornFormKnowledgeBase(listHC);
         }
 
