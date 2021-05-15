@@ -18,14 +18,12 @@ namespace assignment2
                                     $"\niengine <method> <filename>");
             }
             var fileName = args[1];
-            // var isMethodValid = Enum.TryParse<AlgorithmType>(args[0], true, out var algorithmType);
-            // if (!isMethodValid)
-            // {
-            //     throw new Exception($"The input algorithm type ({algorithmType}) is not valid." +
-            //                         $"\nValid inputs are {AlgorithmType.Tt}, {AlgorithmType.Fc}, {AlgorithmType.Bc}.");
-            // }
-
-            var algorithmType = AlgorithmType.Bc;
+            var isMethodValid = Enum.TryParse<AlgorithmType>(args[0], true, out var algorithmType);
+            if (!isMethodValid)
+            {
+                 throw new Exception($"The input algorithm type ({algorithmType}) is not valid." +
+                                     $"\nValid inputs are {AlgorithmType.Tt}, {AlgorithmType.Fc}, {AlgorithmType.Bc}.");
+            }
 
             var knowledgeBase = ReadKnowledgeBaseFromFile(fileName);
             var query = ReadQueryFromFile(fileName);
@@ -57,7 +55,7 @@ namespace assignment2
             
             // KB follows tell line
             line = file.ReadLine();
-            var clauses = new List<HornClause>();
+            var clauses = new Dictionary<string, HornClause>();
             if (line == null) throw new Exception("file is not valid");
             var clauseRegex = new Regex(@"([^;]+)");
             var clauseMatches = clauseRegex.Matches(line);
@@ -77,7 +75,7 @@ namespace assignment2
                 var implicationSymbol = finalImplication == null ? implicationString.Trim() : null;
                 var conjunctSymbolsRegex = new Regex(@"([^&]+)");
                 var conjunctSymbolsMatches = conjunctSymbolsRegex.Matches(symbols);
-                clauses.Add(new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
+                clauses.Add(clause.Value, new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
             }
 
             return new HornFormKnowledgeBase(clauses);

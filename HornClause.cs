@@ -5,7 +5,6 @@ namespace assignment2
 {
     public class HornClause
     {
-        private bool isTrue;
         public HornClause(string? implicationSymbol, bool? finalImplication, HashSet<string> conjunctSymbols)
         {
             ImplicationSymbol = implicationSymbol;
@@ -20,12 +19,10 @@ namespace assignment2
         }
 
         public bool? FinalImplication { get; }
-        
+
         public string? ImplicationSymbol { get; }
 
         public HashSet<string> ConjunctSymbols { get; }
-
-        public void SetTrue(bool isTrue) { this.isTrue = isTrue; }
 
         public bool IsSymbolFact(string symbol)
         {

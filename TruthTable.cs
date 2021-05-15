@@ -10,44 +10,48 @@ namespace assignment2
         //figure 7.10
         public bool DoesEntail(HornFormKnowledgeBase kb, string query)
         {
-            var symbols = kb.Clauses.SelectMany(clause => new HashSet<string>(clause.ConjunctSymbols){clause.ImplicationSymbol, query})
+            var symbols = kb.Clauses.SelectMany(clause => 
+                    new HashSet<string>(clause.Value.ConjunctSymbols){clause.Value.ImplicationSymbol, query})
                 .Where(symbol => symbol != null)
                 .ToHashSet();
 
-            var model = 
-            
-            return TruthTableQueryRecursive(kb, query, symbols, );
+            return TruthTableQueryRecursive(kb, query, symbols, new TruthTableModel(new Dictionary<string, bool?>()));
         }
 
         //figure 7.10
-        private bool TruthTableQueryRecursive(HornFormKnowledgeBase kb, string query, HashSet<string> symbols, HornFormKnowledgeBase model)
+        private bool TruthTableQueryRecursive(HornFormKnowledgeBase kb, string query, HashSet<string> symbols, TruthTableModel model)
         {
             if (symbols.Count == 0)
             {
-                var singleSymbolQuery = new HornClause(null, null, new HashSet<string>() {query});
-                var singleSymbolKb =
-                    new HornFormKnowledgeBase(new List<HornClause>() {singleSymbolQuery});
-                return (isPropositionTrue(kb, model)) ? isPropositionTrue(singleSymbolKb, model) : true;
+                var queryInModel = model.SentenceToTruthValue[query];
+                var queryValue = queryInModel ?? false;
+                
+                return (isPropositionTrue(kb, model)) ? queryValue : true;
             }
 
             var symbol = symbols.First();
+            symbols.Remove(symbol);
             
             //recursively assign true/false values to all symbols, filling model
-            var trueAssignedProposition = new HornClause(null, null, new HashSet<string>(){symbol});
-            var falseAssignedProposition = new HornClause(null, null, new HashSet<string>(){symbol});
-            symbols.Remove(symbol);
-            trueAssignedProposition.SetTrue(true);
-            falseAssignedProposition.SetTrue(false);
+            var trueAssignedModel = 
+                new TruthTableModel(new Dictionary<string, bool?>(model.SentenceToTruthValue)
+                {
+                    {symbol, true}
+                });
             
-            model.Clauses.Add(trueAssignedProposition);
-            return (TruthTableQueryRecursive(kb, query, symbols, model) 
-                                            // && TruthTableQueryRecursive(kb, query, symbols, model.Clauses.Add(falseAssignedProposition))
-                                            );
+            var falseAssignedModel = 
+                new TruthTableModel(new Dictionary<string, bool?>(model.SentenceToTruthValue)
+                {
+                    {symbol, false}
+                });
+            
+            
+            return TruthTableQueryRecursive(kb, query, symbols, trueAssignedModel) 
+                                             && TruthTableQueryRecursive(kb, query, symbols, falseAssignedModel);
         }
 
-        private bool isPropositionTrue(HornFormKnowledgeBase kbOrSentence, HornFormKnowledgeBase model)
+        private bool isPropositionTrue(HornFormKnowledgeBase kbOrSentence, TruthTableModel model)
         {
-            
             //alpha implies beta = true?
             //if sentence holds within model, true
             //foreach sentence in kbOrSentence
