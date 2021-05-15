@@ -75,7 +75,7 @@ namespace assignment2
                 var implicationSymbol = finalImplication == null ? implicationString.Trim() : null;
                 var conjunctSymbolsRegex = new Regex(@"([^&]+)");
                 var conjunctSymbolsMatches = conjunctSymbolsRegex.Matches(symbols);
-                clauses.Add(clause.Value, new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
+                clauses.Add(clause.Value.Trim(), new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
             }
 
             return new HornFormKnowledgeBase(clauses);

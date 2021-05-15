@@ -13,7 +13,7 @@ namespace assignment2
         
         public HashSet<string> Queried { get; }
         
-        public QueryResult(bool result, HashSet<string> entailed, HashSet<string> queried, HashSet<string> provedFalse)
+        public QueryResult(bool result, HashSet<string> entailed, HashSet<string>? queried, HashSet<string>? provedFalse)
         {
             Result = result;
             Entailed = entailed;

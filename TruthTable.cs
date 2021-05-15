@@ -6,18 +6,20 @@ namespace assignment2
 {
     public class TruthTable
     {
-        private int entailedCount = 0;
+        private int _entailedCount;
+
         //figure 7.10
         public QueryResult DoesEntail(HornFormKnowledgeBase kb, string query)
         {
+            _entailedCount = 0;
             var symbols = kb.Clauses.SelectMany(clause => 
                     new HashSet<string>(clause.Value.ConjunctSymbols){clause.Value.ImplicationSymbol, query})
                 .Where(symbol => symbol != null)
                 .ToHashSet();
-            
+
             return new QueryResult(
                 TruthTableQueryRecursive(kb, query, symbols, new TruthTableModel(new Dictionary<string, bool>())),
-                new HashSet<string>() {entailedCount.ToString()}, null, null);
+                new HashSet<string>() {_entailedCount.ToString()}, null, null);
         }
 
         //figure 7.10
@@ -25,11 +27,36 @@ namespace assignment2
         {
             if (symbols.Count == 0)
             {
-               var result = isPropositionTrue(kb, model) ? model.SentenceToTruthValue[query] : true;
-               if (result)
-                   entailedCount++;
-               return result;
+                var doesKbHoldInModel = kb.Clauses.All(clauseKvp =>
+                {
+                    var (sentence, clause) = clauseKvp;
+                    
+                    var holds = false;
 
+                    if (clause.FinalImplication.HasValue)
+                    {
+                        var existsInModel = model.SentenceToTruthValue.TryGetValue(sentence, out var isTrueInModel);
+                        holds = !existsInModel || isTrueInModel == clause.FinalImplication;
+                    }
+                    else if (clause.ImplicationSymbol != null)
+                    {
+                        holds = true;
+                        var conjunctAreTrueInModel = clause.ConjunctSymbols.All(s =>
+                            model.SentenceToTruthValue.ContainsKey(s) && model.SentenceToTruthValue[s]);
+                        var implicationSymbolIsFalseInModel =
+                            model.SentenceToTruthValue.ContainsKey(clause.ImplicationSymbol)
+                            && !model.SentenceToTruthValue[clause.ImplicationSymbol];
+                        if (conjunctAreTrueInModel && implicationSymbolIsFalseInModel) holds = false;
+                    }
+
+                    return holds;
+                });
+
+                var result = doesKbHoldInModel ? model.SentenceToTruthValue[query] : true;
+               
+               if (doesKbHoldInModel && model.SentenceToTruthValue[query]) _entailedCount++;
+               
+               return result;
             }
 
             var symbol = symbols.First();
@@ -47,34 +74,16 @@ namespace assignment2
                 {
                     {symbol, false}
                 });
-            
-            
-            return TruthTableQueryRecursive(kb, query, symbols, trueAssignedModel) 
-                                             && TruthTableQueryRecursive(kb, query, symbols, falseAssignedModel);
+
+            var trueQuery = TruthTableQueryRecursive(kb, query, symbols, trueAssignedModel);
+            var falseQuery = TruthTableQueryRecursive(kb, query, symbols, falseAssignedModel);
+            return trueQuery
+                   && falseQuery;
         }
 
-        private bool isPropositionTrue(HornFormKnowledgeBase kbOrSentence, TruthTableModel model)
+        /*private TruthTableModel evaluateComplexSentences(HornFormKnowledgeBase inputKb, TruthTableModel inputModel)
         {
-            //if sentence holds within model, true
-            foreach (var keyValuePair in kbOrSentence.Clauses)
-            {
-                var sentence = keyValuePair.Key;
-                var clause = keyValuePair.Value; //todo evaluate complex clauses (non-atomic sentences)
-                var exists = model.SentenceToTruthValue.ContainsKey(sentence);
-                
-                if (exists && model.SentenceToTruthValue[sentence] != true)
-                    return false;
-            }
-
-            return true;
-        }
-
-        // private HornFormKnowledgeBase evaluateKB(HornFormKnowledgeBase inputKb) //populate TT with complex sentences
-        // {
-        //     foreach (var clause in inputKb.Clauses)
-        //     {
-        //         if (clause.IsSymbolFact(sentence.ConjunctSymbols))
-        //     }
-        // }
+            
+        }*/
     }
 }

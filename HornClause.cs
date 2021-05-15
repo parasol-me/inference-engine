@@ -14,8 +14,7 @@ namespace assignment2
 
         public static HornClause AsFact(string factSymbol)
         {
-            return new(
-                null, true, new HashSet<string>() {factSymbol});
+            return new(null, true, new HashSet<string>() {factSymbol});
         }
 
         public bool? FinalImplication { get; }

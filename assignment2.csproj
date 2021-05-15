@@ -6,7 +6,6 @@
         <LangVersion>latest</LangVersion>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <GenerateProgramFile>false</GenerateProgramFile>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
