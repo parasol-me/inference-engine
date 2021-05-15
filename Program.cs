@@ -36,7 +36,7 @@ namespace assignment2
             
             watch.Stop();
             
-            Console.WriteLine($"{(queryResult.Result ? "YES" : "NO")}: {string.Join(", ", queryResult.Entailed)}");
+            Console.WriteLine($"{(queryResult.Result ? "YES" : "NO")}: {(algorithmType != AlgorithmType.Tt || queryResult.Result ? string.Join(", ", queryResult.Entailed) : "")}");
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 

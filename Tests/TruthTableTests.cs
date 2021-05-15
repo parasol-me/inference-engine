@@ -27,7 +27,7 @@ namespace assignment2.Tests
             var queryResult3 = tt.DoesEntail(_kb, "b");
             var queryResult4 = tt.DoesEntail(_kb, "c");
             Assert.IsFalse(queryResult.Result);
-            Assert.IsTrue(tt.DoesEntail(_kb, "a").Result && tt.DoesEntail(_kb, "b").Result && tt.DoesEntail(_kb, "c").Result);
+            Assert.IsTrue(queryResult2.Result && queryResult3.Result && queryResult4.Result);
         }
         //
         //
