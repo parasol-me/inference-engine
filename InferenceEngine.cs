@@ -31,7 +31,7 @@ namespace assignment2
             //couldnt get the LINQ wizardry working here, basic foreach.. 
             foreach (var clause in queue)
             {
-                inferred.Add(clause.ImplicationSymbol);
+                inferred.Add(clause.ConjunctSymbols.First()); //always first, as assessing fact (singular symbol)
             }
             while (queue.Count > 0)
             {
@@ -57,31 +57,39 @@ namespace assignment2
                         }
                         else
                         {
+                            //if all conjunct symbols are proven, we can prove the Implication
+                            bool allSymbolsTrue = true;
                             foreach (var symbol in kbClause.ConjunctSymbols)
                             {
-                                //if any one isn't, add to agenda
                                 if (!inferred.Contains(symbol))
                                 {
-                                    agenda.Add(kbClause);
+                                    allSymbolsTrue = false;
                                     break;
                                 }
-                                //todo if ALL are, add to queue
-                                queue.Add(new HornClause(null, true, new HashSet<string>(){kbClause.ImplicationSymbol}));
-                                break;
                             }
+                            //if any one isn't, add to agenda
+                            if (allSymbolsTrue)
+                                queue.Add(new HornClause(null, true, new HashSet<string>() {kbClause.ImplicationSymbol}));
+                            else 
+                                agenda.Add(kbClause);
                         }
                     }
                 }
 
                 foreach (var clause in agenda)
                 {
+                    bool allSymbolsTrue = true;
                     foreach (var symbol in clause.ConjunctSymbols)
                     {
                         if (!inferred.Contains(symbol))
+                        {
+                            allSymbolsTrue = false;
                             break;
-                        
-                        queue.Add(clause);
+                        }
+
                     }
+                    if (allSymbolsTrue)
+                        queue.Add(new HornClause(null, true, new HashSet<string>() {clause.ImplicationSymbol}));
                 }
             }
             return new QueryResult(false, null, null, null);
