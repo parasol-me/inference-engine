@@ -47,7 +47,7 @@ namespace assignment2
             var file = new System.IO.StreamReader($@"{fileName}");
 
             // find tell line
-            string line = file.ReadLine();
+            var line = file.ReadLine();
             while (line != null && line.ToLower() != "tell")
             {
                 line = file.ReadLine();
@@ -88,7 +88,7 @@ namespace assignment2
             var file = new System.IO.StreamReader($@"{fileName}");
 
             // find ask line
-            string line = file.ReadLine();
+            var line = file.ReadLine();
             while (line != null && line.ToLower() != "ask")
             {
                 line = file.ReadLine();

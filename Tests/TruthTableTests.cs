@@ -11,17 +11,18 @@ namespace assignment2.Tests
         [SetUp]
         public void init()
         {
-            HornClause hc1 = new HornClause(null, true, new HashSet<string> {"a"});
-            HornClause hc2 = new HornClause(null, true, new HashSet<string> {"b"});
-            HornClause hc3 = new HornClause(null, true, new HashSet<string> {"c"});
-            List<HornClause> listHC = new List<HornClause>(){hc1, hc2, hc3};
+            var hc1 = new HornClause(null, true, new HashSet<string> {"a"});
+            var hc2 = new HornClause(null, true, new HashSet<string> {"b"});
+            var hc3 = new HornClause(null, true, new HashSet<string> {"c"});
+            var listHC = new List<HornClause>(){hc1, hc2, hc3};
             kb = new HornFormKnowledgeBase(listHC);
         }
 
         [Test]
         public void testTT()
         {
-            tt.DoesEntail(kb, "d");
+            Assert.IsFalse(tt.DoesEntail(kb, "d"));
+            Assert.IsTrue(tt.DoesEntail(kb, "a") && tt.DoesEntail(kb, "b") && tt.DoesEntail(kb, "c"));
         }
         //
         //
