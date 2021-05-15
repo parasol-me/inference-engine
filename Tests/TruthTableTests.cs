@@ -14,15 +14,15 @@ namespace assignment2.Tests
             var hc1 = new HornClause(null, true, new HashSet<string> {"a"});
             var hc2 = new HornClause(null, true, new HashSet<string> {"b"});
             var hc3 = new HornClause(null, true, new HashSet<string> {"c"});
-            var listHC = new Dictionary<string, HornClause>() { };
+            var listHC = new Dictionary<string, HornClause>(){{"a", hc1}, {"b", hc2}, {"c", hc3}};
             kb = new HornFormKnowledgeBase(listHC);
         }
 
         [Test]
         public void testTT()
         {
-            Assert.IsFalse(tt.DoesEntail(kb, "d"));
-            Assert.IsTrue(tt.DoesEntail(kb, "a") && tt.DoesEntail(kb, "b") && tt.DoesEntail(kb, "c"));
+            Assert.IsFalse(tt.DoesEntail(kb, "d").Result);
+            Assert.IsTrue(tt.DoesEntail(kb, "a").Result && tt.DoesEntail(kb, "b").Result && tt.DoesEntail(kb, "c").Result);
         }
         //
         //

@@ -4,11 +4,11 @@ namespace assignment2
 {
     public class TruthTableModel
     {
-        public TruthTableModel(Dictionary<string, bool?> sentenceToTruthValue)
+        public TruthTableModel(Dictionary<string, bool> sentenceToTruthValue)
         {
             SentenceToTruthValue = sentenceToTruthValue;
         }
 
-        public Dictionary<string, bool?> SentenceToTruthValue { get; }
+        public Dictionary<string, bool> SentenceToTruthValue { get; }
     }
 }

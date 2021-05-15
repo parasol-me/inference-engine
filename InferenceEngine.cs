@@ -12,7 +12,8 @@ namespace assignment2
             switch (algorithmType)
             {
                 case AlgorithmType.Tt:
-                    throw new NotImplementedException();
+                    var tt = new TruthTable();
+                    return tt.DoesEntail(knowledgeBase, querySymbol);
                 case AlgorithmType.Fc:
                     return ForwardChainingQueryRecursive(knowledgeBase, querySymbol);
                 case AlgorithmType.Bc:
