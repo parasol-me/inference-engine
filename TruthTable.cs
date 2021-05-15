@@ -10,42 +10,32 @@ namespace assignment2
         //figure 7.10
         public bool DoesEntail(HornFormKnowledgeBase kb, string query)
         {
-            List<string> symbols = new List<string>();
-            symbols.Add(query);
-            foreach (HornClause hc in kb.Clauses)
-            {
-                if (hc.FinalImplication != null && (bool) !hc.FinalImplication)
-                {
-                    if (!symbols.Contains(hc.ImplicationSymbol))
-                        symbols.Add(hc.ImplicationSymbol);
-                }
-                {
-                    foreach (var conjunctSymbol in hc.ConjunctSymbols)
-                    {
-                        if (!symbols.Contains(conjunctSymbol))
-                            symbols.Add(conjunctSymbol);
-                    }
-                }
-                
-            }
-            return TruthTableQueryRecursive(kb, query, symbols, new HornFormKnowledgeBase(new List<HornClause>()));
+            var symbols = kb.Clauses.SelectMany(clause => new HashSet<string>(clause.ConjunctSymbols){clause.ImplicationSymbol, query})
+                .Where(symbol => symbol != null)
+                .ToHashSet();
+
+            var model = 
+            
+            return TruthTableQueryRecursive(kb, query, symbols, );
         }
 
         //figure 7.10
-        private bool TruthTableQueryRecursive(HornFormKnowledgeBase kb, string query, List<string> symbols, HornFormKnowledgeBase model)
+        private bool TruthTableQueryRecursive(HornFormKnowledgeBase kb, string query, HashSet<string> symbols, HornFormKnowledgeBase model)
         {
-            if (symbols.Count.Equals(0))
+            if (symbols.Count == 0)
             {
-                HornClause singleSymbolQuery = new HornClause(null, null, new HashSet<string>() {query});
-                HornFormKnowledgeBase singleSymbolKb =
+                var singleSymbolQuery = new HornClause(null, null, new HashSet<string>() {query});
+                var singleSymbolKb =
                     new HornFormKnowledgeBase(new List<HornClause>() {singleSymbolQuery});
                 return (isPropositionTrue(kb, model)) ? isPropositionTrue(singleSymbolKb, model) : true;
             }
-        
+
+            var symbol = symbols.First();
+            
             //recursively assign true/false values to all symbols, filling model
-            HornClause trueAssignedProposition = new HornClause(null, null, new HashSet<string>(){symbols.First()});
-            HornClause falseAssignedProposition = new HornClause(null, null, new HashSet<string>(){symbols.First()});
-            symbols.RemoveAt(0);
+            var trueAssignedProposition = new HornClause(null, null, new HashSet<string>(){symbol});
+            var falseAssignedProposition = new HornClause(null, null, new HashSet<string>(){symbol});
+            symbols.Remove(symbol);
             trueAssignedProposition.SetTrue(true);
             falseAssignedProposition.SetTrue(false);
             
@@ -67,12 +57,12 @@ namespace assignment2
 
         }
 
-        private HornFormKnowledgeBase evaluateKB(HornFormKnowledgeBase inputKb)
-        {
-            foreach (var clause in inputKb.Clauses)
-            {
-                if (clause.IsSymbolFact(sentence.ConjunctSymbols))
-            }
-        }
+        // private HornFormKnowledgeBase evaluateKB(HornFormKnowledgeBase inputKb)
+        // {
+        //     foreach (var clause in inputKb.Clauses)
+        //     {
+        //         if (clause.IsSymbolFact(sentence.ConjunctSymbols))
+        //     }
+        // }
     }
 }
