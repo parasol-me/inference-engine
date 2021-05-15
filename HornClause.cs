@@ -13,6 +13,12 @@ namespace assignment2
             ConjunctSymbols = conjunctSymbols;
         }
 
+        public static HornClause AsFact(string factSymbol)
+        {
+            return new(
+                null, true, new HashSet<string>() {factSymbol});
+        }
+
         public bool? FinalImplication { get; }
         
         public string? ImplicationSymbol { get; }
