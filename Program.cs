@@ -21,8 +21,8 @@ namespace assignment2
             var isMethodValid = Enum.TryParse<AlgorithmType>(args[0], true, out var algorithmType);
             if (!isMethodValid)
             {
-                throw new Exception($"The input algorithm type ({algorithmType}) is not valid." +
-                                    $"\nValid inputs are {AlgorithmType.Tt}, {AlgorithmType.Fc}, {AlgorithmType.Bc}.");
+                 throw new Exception($"The input algorithm type ({algorithmType}) is not valid." +
+                                     $"\nValid inputs are {AlgorithmType.Tt}, {AlgorithmType.Fc}, {AlgorithmType.Bc}.");
             }
 
             var knowledgeBase = ReadKnowledgeBaseFromFile(fileName);
@@ -36,7 +36,7 @@ namespace assignment2
             
             watch.Stop();
             
-            Console.WriteLine($"{(queryResult.Result ? "YES" : "NO")}: {string.Join(", ", queryResult.Entailed)}");
+            Console.WriteLine($"{(queryResult.Result ? "YES" : "NO")}: {(algorithmType != AlgorithmType.Tt || queryResult.Result ? string.Join(", ", queryResult.Entailed) : "")}");
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
@@ -45,16 +45,17 @@ namespace assignment2
             var file = new System.IO.StreamReader($@"{fileName}");
 
             // find tell line
-            string line = file.ReadLine();
+            var line = file.ReadLine();
             while (line != null && line.ToLower() != "tell")
             {
                 line = file.ReadLine();
+                //todo ?
             }
             if (line == null || line.ToLower() != "tell") throw new Exception("file is not valid");
             
             // KB follows tell line
             line = file.ReadLine();
-            var clauses = new List<HornClause>();
+            var clauses = new Dictionary<string, HornClause>();
             if (line == null) throw new Exception("file is not valid");
             var clauseRegex = new Regex(@"([^;]+)");
             var clauseMatches = clauseRegex.Matches(line);
@@ -64,6 +65,7 @@ namespace assignment2
                 var splitClause = clause.Value.Split("=>");
                 var symbols = splitClause[0];
                 var implicationString = splitClause.Length == 2 ? splitClause[1] : null;
+                //todo multiple conjunctions?
                 var finalImplication =
                     implicationString == null || implicationString.ToLower() == "true"
                         ? true
@@ -73,7 +75,7 @@ namespace assignment2
                 var implicationSymbol = finalImplication == null ? implicationString.Trim() : null;
                 var conjunctSymbolsRegex = new Regex(@"([^&]+)");
                 var conjunctSymbolsMatches = conjunctSymbolsRegex.Matches(symbols);
-                clauses.Add(new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
+                clauses.Add(clause.Value.Trim(), new HornClause(implicationSymbol, finalImplication, conjunctSymbolsMatches.Select(match => match.Value.Trim()).ToHashSet()));
             }
 
             return new HornFormKnowledgeBase(clauses);
@@ -84,7 +86,7 @@ namespace assignment2
             var file = new System.IO.StreamReader($@"{fileName}");
 
             // find ask line
-            string line = file.ReadLine();
+            var line = file.ReadLine();
             while (line != null && line.ToLower() != "ask")
             {
                 line = file.ReadLine();

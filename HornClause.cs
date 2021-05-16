@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using System;
 using System.Collections.Generic;
 
 namespace assignment2
@@ -15,12 +14,11 @@ namespace assignment2
 
         public static HornClause AsFact(string factSymbol)
         {
-            return new(
-                null, true, new HashSet<string>() {factSymbol});
+            return new(null, true, new HashSet<string>() {factSymbol});
         }
 
         public bool? FinalImplication { get; }
-        
+
         public string? ImplicationSymbol { get; }
 
         public HashSet<string> ConjunctSymbols { get; }
