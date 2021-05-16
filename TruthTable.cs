@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace assignment2
 {
     public class TruthTable
     {
+        //return and test variables 
         private int _entailedCount;
         private int _totalNumberOfModels;
-
-        //figure 7.10
+        
         public QueryResult DoesEntail(HornFormKnowledgeBase kb, string query)
         {
             _entailedCount = 0;
             _totalNumberOfModels = 0;
+            //extract all atomic sentences from input and query
             var symbols = kb.Clauses.SelectMany(clause => 
                     new HashSet<string>(clause.Value.ConjunctSymbols){clause.Value.ImplicationSymbol, query})
                 .Where(symbol => symbol != null)
@@ -23,13 +23,13 @@ namespace assignment2
                 TruthTableQueryRecursive(kb, query, symbols, new TruthTableModel(new Dictionary<string, bool>())),
                 new HashSet<string>() {_entailedCount.ToString()}, new HashSet<string>() {_totalNumberOfModels.ToString()}, null);
         }
-
-        //figure 7.10
+        
         private bool TruthTableQueryRecursive(HornFormKnowledgeBase kb, string query, HashSet<string> symbols, TruthTableModel model)
         {
             if (symbols.Count == 0)
             {
                 _totalNumberOfModels++;
+                //for all models where KnowledgeBase is true, check query in model
                 var doesKbHoldInModel = kb.Clauses.All(clauseKvp =>
                 {
                     var (sentence, clause) = clauseKvp;
@@ -65,7 +65,7 @@ namespace assignment2
             var firstSymbol = symbols.First();
             var rest = symbols.Where(symbol => symbol != firstSymbol).ToHashSet();
 
-            //recursively assign true/false values to all symbols, filling model
+            //recursively assign true/false values to all symbols, filling models
             var trueAssignedModel = 
                 new TruthTableModel(new Dictionary<string, bool>(model.SentenceToTruthValue)
                 {
@@ -81,10 +81,5 @@ namespace assignment2
             return TruthTableQueryRecursive(kb, query, rest, trueAssignedModel)
                    && TruthTableQueryRecursive(kb, query, rest, falseAssignedModel);
         }
-
-        /*private TruthTableModel evaluateComplexSentences(HornFormKnowledgeBase inputKb, TruthTableModel inputModel)
-        {
-            
-        }*/
     }
 }

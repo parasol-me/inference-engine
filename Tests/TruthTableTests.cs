@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 
 namespace assignment2.Tests
@@ -29,26 +28,5 @@ namespace assignment2.Tests
             Assert.IsFalse(queryResult.Result);
             Assert.IsTrue(queryResult2.Result && queryResult3.Result && queryResult4.Result);
         }
-        //
-        //
-        // [Test]
-        // public void testOne()
-        // {
-        //     HashSet<string> result = tt.DoesEntail(kb, "d");
-        //     Assert.AreEqual(4, result.Count);
-        // }
-        //
-        // [Test]
-        // public void NumbersToBinary()
-        // {
-        //     HashSet<string> result = tt.NumToBits(3);
-        //     Assert.AreEqual(3, result.Count);
-        // }
-        //
-        // [Test]
-        // public void CreateTable()
-        // {
-        //     tt.CreateTable(tt.DoesEntail(kb, "a"));
-        // }
     }
 }
