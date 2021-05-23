@@ -35,10 +35,7 @@ namespace assignment2
             
             while (queue.Count > 0)
             {
-                var clauseUnderAssessment = queue.Dequeue();
-
-                foreach (var kbClause in clausesToSearch.Where(kbClause => 
-                    kbClause.ConjunctSymbols.Contains(clauseUnderAssessment.ConjunctSymbols.First())))
+                foreach (var kbClause in clausesToSearch)
                 {
                     if (IsClauseImplied(kbClause, inferred) && kbClause.ImplicationSymbol != null)
                     {
@@ -73,7 +70,6 @@ namespace assignment2
                     if (agendaItem.ImplicationSymbol.Equals(querySymbol))
                         return new QueryResult(true, inferred, null, null);
                 }
-                
             }
             return new QueryResult(false, inferred, null, null);
         }
