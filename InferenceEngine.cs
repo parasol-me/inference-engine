@@ -15,7 +15,7 @@ namespace assignment2
                     var tt = new TruthTable();
                     return tt.DoesEntail(knowledgeBase, querySymbol);
                 case AlgorithmType.Fc:
-                    return ForwardChainingQueryRecursive(knowledgeBase, querySymbol);
+                    return ForwardChainingQuery(knowledgeBase, querySymbol);
                 case AlgorithmType.Bc:
                     return BackwardChainingQueryRecursive(knowledgeBase, querySymbol
                     , new HashSet<string>(), new HashSet<string>(), new HashSet<string>());
@@ -24,7 +24,7 @@ namespace assignment2
             }
         }
 
-        private QueryResult ForwardChainingQueryRecursive(HornFormKnowledgeBase knowledgeBase, string querySymbol)
+        private QueryResult ForwardChainingQuery(HornFormKnowledgeBase knowledgeBase, string querySymbol)
         {
             var allClauses = knowledgeBase.Clauses.Values;
             var agenda = new List<HornClause>();     //symbols which are not completely implied (awaiting conjunct symbol)
@@ -55,7 +55,13 @@ namespace assignment2
                         {
                             //if all conjunct symbols are proven, we can prove the Implication
                             if (isClauseImplied(kbClause, inferred) && kbClause.ImplicationSymbol != null)
-                                queue.Enqueue(HornClause.AsFact(kbClause.ImplicationSymbol));
+                            {
+                                if (!inferred.Contains(kbClause.ImplicationSymbol)) 
+                                    queue.Enqueue(HornClause.AsFact(kbClause.ImplicationSymbol));
+                                inferred.Add(kbClause.ImplicationSymbol);
+                                if (kbClause.ImplicationSymbol.Equals(querySymbol))
+                                    return new QueryResult(true, inferred, null, null);
+                            }
                             //if any one isn't, add to agenda
                             else 
                                 agenda.Add(kbClause);
@@ -67,8 +73,15 @@ namespace assignment2
                 foreach (var agendaItem in agenda)
                 {
                     if (isClauseImplied(agendaItem, inferred) && agendaItem.ImplicationSymbol != null)
-                        queue.Enqueue(HornClause.AsFact(agendaItem.ImplicationSymbol));
+                    {
+                        if (!inferred.Contains(agendaItem.ImplicationSymbol))
+                            queue.Enqueue(HornClause.AsFact(agendaItem.ImplicationSymbol));
+                        inferred.Add(agendaItem.ImplicationSymbol);
+                        if (agendaItem.ImplicationSymbol.Equals(querySymbol))
+                            return new QueryResult(true, inferred, null, null);
+                    }
                 }
+                
             }
             return new QueryResult(false, inferred, null, null);
         }
